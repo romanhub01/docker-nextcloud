@@ -23,7 +23,7 @@ services:
       - DB_PASSWORD=Paris1984
       - DB_HOST=nextcloud-db
     volumes:
-      - /home/opensuse/docker/nextcloud/data::/var/www/html/data
+      - /home/opensuse/docker/nextcloud/data:/var/www/html/data
       - /home/opensuse/docker/nextcloud/config:/var/www/html/config
       - /home/opensuse/docker/nextcloud/apps:/var/www/html/apps2
       - /home/opensuse/docker/nextcloud/themes:/var/www/html/nextcloud/themes
