@@ -1,24 +1,51 @@
----
+
 version: '3'
-# This instance is using SQLite3 as database backend.
-# Please consider using a proper database like MariaDB or PostgreSQL
-# if you want to use this productive.
+
+networks:
+  nextcloud_network:
 
 services:
   nextcloud:
-    image: wonderfall/nextcloud
-    build:
-      context: .
-      dockerfile: Dockerfile.18.0
+    image: nextcloud
+    depends_on:
+      - nextcloud-db           # If using MySQL
     environment:
       - UID=1000
       - GID=1000
-      - ADMIN_USER=mrrobot
-      - ADMIN_PASSWORD=supercomplicatedpassword
-      - DB_TYPE=sqlite
+      - UPLOAD_MAX_SIZE=10G
+      - APC_SHM_SIZE=128M
+      - OPCACHE_MEM_SIZE=128
+      - CRON_PERIOD=15m
+      - TZ=America/Argentina/Buenos_Aires
+      - DB_TYPE=mysql
+      - DB_NAME=nextcloud
+      - DB_USER=nextcloud
+      - DB_PASSWORD=Paris1984
+      - DB_HOST=nextcloud-db
     volumes:
-      - ./data:/data
-      - ./config:/config
-      - ./apps:/apps2
+      - /home/opensuse/docker/nextcloud/data:/data
+      - /home/opensuse/docker/nextcloud/config:/config
+      - /home/opensuse/docker/nextcloud/apps:/apps2
+      - /home/opensuse/docker/nextcloud/themes:/nextcloud/themes
     ports:
-      - 8888:8888
+      - 1080:80
+      - 1443:443
+    networks:
+      - nextcloud_network
+    restart: unless-stopped
+
+  # If using MySQL
+  nextcloud-db:
+    image: mariadb
+    volumes:
+      - /docker/nextcloud/db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=Paris1984
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=Paris1984
+    networks:
+      - nextcloud_network
+    ports:
+      - 3306:3306
+    restart: unless-stopped
